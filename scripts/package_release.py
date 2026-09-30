@@ -25,7 +25,11 @@ def discover_config() -> tuple[str, Path]:
 
 
 def iter_files(path: Path):
-    yield from sorted((item for item in path.rglob("*") if item.is_file()), key=lambda p: p.as_posix())
+    # Finder metadata (.DS_Store, and the reported .DS_store spelling) is not shipped.
+    yield from sorted(
+        (item for item in path.rglob("*") if item.is_file() and item.name.casefold() != ".ds_store"),
+        key=lambda p: p.as_posix(),
+    )
 
 
 def add_file(archive: zipfile.ZipFile, source: Path, destination: str) -> None:
